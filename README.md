@@ -14,6 +14,9 @@ Available Docker images can be found at
 ### Test Pravega on Nautilus from inside of Nautilus
 
 Set environment variables.
+Do not change PRAVEGA_CONTROLLER_URI as this URL will work from within any Kubernetes pod.
+You may need to change PRAVEGA_SCOPE.
+
 ```
 export PRAVEGA_CONTROLLER_URI=tcp://nautilus-pravega-controller.nautilus-pravega.svc.cluster.local:9090
 export PRAVEGA_SCOPE=examples
@@ -34,6 +37,9 @@ pravega-tester
 ### Test Pravega on Nautilus from outside of Nautilus
 
 Set environment variables.
+You **must** change PRAVEGA_CONTROLLER_URI.
+You may need to change PRAVEGA_SCOPE.
+
 ```
 export PRAVEGA_CONTROLLER_URI=tcp://nautilus-pravega-controller.example.com:9090
 export PRAVEGA_SCOPE=examples
@@ -59,6 +65,8 @@ ${IMAGE}
 ### Test Pravega without Nautilus
 
 Set environment variables.
+You may need to change PRAVEGA_CONTROLLER_URI and PRAVEGA_SCOPE.
+
 ```
 export PRAVEGA_CONTROLLER_URI=tcp://localhost:9090
 export PRAVEGA_SCOPE=examples

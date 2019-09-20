@@ -1,0 +1,15 @@
+*.iml
+.attach_pid*
+.gradle/
+.idea/
+.ipynb_checkpoints/
+*.json
+*.log
+.nfs*
+build/
+ca-certificates/*
+!ca-certificates/README.txt
+data/
+lib/*
+!lib/README.txt
+out/

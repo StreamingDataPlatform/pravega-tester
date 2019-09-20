@@ -8,6 +8,9 @@ When executed, it will create a new stream, write events, read events, and delet
 This section shows how to use a pre-built Docker image of the Pravega Tester.
 There is no need to clone this repo or install any build tools.
 
+Available Docker images can be found at
+[Docker Hub](https://hub.docker.com/r/claudiofahey/pravega-tester/tags).
+
 ### Test Pravega on Nautilus from inside of Nautilus
 
 Set environment variables.
@@ -17,18 +20,13 @@ export PRAVEGA_SCOPE=examples
 export IMAGE=claudiofahey/pravega-tester:0.11.13
 ```
 
-Obtain the Pravega authentication credentials (Keycloak).
-```
-kubectl get secret ${PRAVEGA_SCOPE}-pravega -n ${PRAVEGA_SCOPE} -o jsonpath="{.data.keycloak\.json}" | base64 -d > ${HOME}/keycloak.json
-chmod go-rw ${HOME}/keycloak.json
-```
-
 Run Pravega Tester in Kubernetes.
 ```
 kubectl run -n ${PRAVEGA_SCOPE} --rm -it \
 --serviceaccount ${PRAVEGA_SCOPE}-pravega \
 --env="PRAVEGA_CONTROLLER_URI=${PRAVEGA_CONTROLLER_URI}" \
 --env="PRAVEGA_SCOPE=${PRAVEGA_SCOPE}" \
+--env="JAVA_OPTS=-Droot.log.level=DEBUG" \
 --image ${IMAGE} \
 pravega-tester
 ```
@@ -44,7 +42,8 @@ export IMAGE=claudiofahey/pravega-tester:0.11.13
 
 Obtain the Pravega authentication credentials (Keycloak).
 ```
-kubectl get secret ${PRAVEGA_SCOPE}-pravega -n ${PRAVEGA_SCOPE} -o jsonpath="{.data.keycloak\.json}" | base64 -d > ${HOME}/keycloak.json
+kubectl get secret ${PRAVEGA_SCOPE}-pravega -n ${PRAVEGA_SCOPE} -o jsonpath="{.data.keycloak\.json}" | \
+base64 -d > ${HOME}/keycloak.json
 chmod go-rw ${HOME}/keycloak.json
 ```
 

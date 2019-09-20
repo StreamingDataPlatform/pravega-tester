@@ -83,7 +83,7 @@ Below shows the expected output with Pravega on Nautilus. Some lines are ommitte
 INFO  [2019-09-20 03:11:04.252] [main] c.d.n.p.c.auth.utils.ConfigFileUtils: Final file resolution attempt: /keycloak.json
 INFO  [2019-09-20 03:11:05.339] [main] c.d.n.p.c.a.PravegaKeycloakCredentials: Loaded Keycloak Credentials
 INFO  [2019-09-20 03:11:05.341] [main] io.pravega.client.ClientConfig: Client credentials were extracted from environment variables. They weren't explicitly supplied as a Credentials object or system properties.
-INFO  [2019-09-20 03:11:05.342] [main] io.pravega.example.tester.Tester: config: AppConfiguration{clientConfig=ClientConfig(controllerURI=tcp://xxx.us-west-2.elb.amazonaws.com:9090, credentials=com.dellemc.nautilus.pravega.client.auth.PravegaKeycloakCredentials@2145b572, trustStore=null, validateHostName=true, maxConnectionsPerSegmentStore=10), defaultScope='examples'}
+INFO  [2019-09-20 03:11:05.342] [main] io.pravega.example.tester.Tester: config: AppConfiguration{clientConfig=ClientConfig(controllerURI=tcp://nautilus-pravega-controller.example.com:9090, credentials=com.dellemc.nautilus.pravega.client.auth.PravegaKeycloakCredentials@2145b572, trustStore=null, validateHostName=true, maxConnectionsPerSegmentStore=10), defaultScope='examples'}
 INFO  [2019-09-20 03:11:05.344] [main] io.pravega.example.tester.Tester: streamName=pravega-tester-56e8eec3-283e-47f2-9ef0-3b63c6618f47
 INFO  [2019-09-20 03:11:08.020] [main] io.pravega.example.tester.Tester: Writing event 0
 INFO  [2019-09-20 03:11:08.561] [main] io.pravega.example.tester.Tester: Writing event 1

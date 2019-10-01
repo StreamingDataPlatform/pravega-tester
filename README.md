@@ -70,7 +70,8 @@ You may need to change PRAVEGA_CONTROLLER_URI and PRAVEGA_SCOPE.
 ```
 export PRAVEGA_CONTROLLER_URI=tcp://localhost:9090
 export PRAVEGA_SCOPE=examples
-export IMAGE=claudiofahey/pravega-tester:0.11.13
+export CREATE_SCOPE=true
+export IMAGE=claudiofahey/pravega-tester:0.5.0
 ```
 
 Run Pravega Tester in a Docker container.
@@ -78,6 +79,7 @@ Run Pravega Tester in a Docker container.
 docker run --rm --network host \
 -e PRAVEGA_CONTROLLER_URI \
 -e PRAVEGA_SCOPE \
+-e CREATE_SCOPE \
 -e pravega_client_auth_method= \
 -e pravega_client_auth_loadDynamic= \
 ${IMAGE}

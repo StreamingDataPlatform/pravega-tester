@@ -21,11 +21,13 @@ public class AppConfiguration {
 
     private final ClientConfig clientConfig;
     private final String defaultScope;
+    private final boolean createScope;
 
     public AppConfiguration(String[] args) {
         URI controllerURI = URI.create(getEnvVar("PRAVEGA_CONTROLLER_URI", "tcp://localhost:9090"));
         clientConfig = ClientConfig.builder().controllerURI(controllerURI).build();
         defaultScope = getEnvVar("PRAVEGA_SCOPE", "examples");
+        createScope = Boolean.parseBoolean(getEnvVar("CREATE_SCOPE", "false"));
     }
 
     @Override
@@ -33,6 +35,7 @@ public class AppConfiguration {
         return "AppConfiguration{" +
                 "clientConfig=" + clientConfig +
                 ", defaultScope='" + defaultScope + '\'' +
+                ", createScope=" + createScope +
                 '}';
     }
 
@@ -42,6 +45,10 @@ public class AppConfiguration {
 
     public String getDefaultScope() {
         return defaultScope;
+    }
+
+    public boolean isCreateScope() {
+        return createScope;
     }
 
     protected static String getEnvVar(String name, String defaultValue) {

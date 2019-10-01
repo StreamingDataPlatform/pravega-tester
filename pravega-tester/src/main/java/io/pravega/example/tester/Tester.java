@@ -50,56 +50,61 @@ public class Tester implements Runnable {
             String streamName = "pravega-tester-" + UUID.randomUUID().toString();
             log.info("streamName={}", streamName);
             // Open stream manager, client factory, reader group manager
-            try (StreamManager streamManager = StreamManager.create(getConfig().getClientConfig());
-                 EventStreamClientFactory clientFactory = EventStreamClientFactory.withScope(
-                         getConfig().getDefaultScope(),
-                         getConfig().getClientConfig());
-                 ReaderGroupManager readerGroupManager = ReaderGroupManager.withScope(
-                         getConfig().getDefaultScope(),
-                         getConfig().getClientConfig())) {
-                // Create stream
-                streamManager.createStream(
-                        getConfig().getDefaultScope(),
-                        streamName,
-                        StreamConfiguration.builder().build());
-                // Create writer
-                try (EventStreamWriter<String> pravegaWriter = clientFactory.createEventWriter(
-                             streamName,
-                             new UTF8StringSerializer(),
-                             EventWriterConfig.builder().build())) {
-                    // Write events to stream
-                    for (int i = 0 ; i < numEvents ; i++) {
-                        log.info("Writing event {}", i);
-                        CompletableFuture<Void> future = pravegaWriter.writeEvent(Integer.toString(i));
-                        future.get();
-                    }
+            try (StreamManager streamManager = StreamManager.create(getConfig().getClientConfig())) {
+                if (getConfig().isCreateScope()) {
+                    boolean scopeCreated = streamManager.createScope(getConfig().getDefaultScope());
+                    log.info("scopeCreated={}", scopeCreated);
                 }
-                // Create reader group
-                final String readerGroup = UUID.randomUUID().toString().replace("-", "");
-                final ReaderGroupConfig readerGroupConfig = ReaderGroupConfig.builder()
-                        .stream(Stream.of(getConfig().getDefaultScope(), streamName))
-                        .build();
-                readerGroupManager.createReaderGroup(readerGroup, readerGroupConfig);
-                // Create reader
-                try (EventStreamReader<String> reader = clientFactory.createReader("reader",
-                        readerGroup,
-                        new UTF8StringSerializer(),
-                        ReaderConfig.builder().build())) {
-                    // Read events from stream
-                    int numEventsRead = 0;
-                    while (numEventsRead < numEvents) {
-                        EventRead<String> event = reader.readNextEvent(1000);
-                        if (event.getEvent() != null) {
-                            log.info("Read event {}", event.getEvent());
-                            numEventsRead++;
+                try (EventStreamClientFactory clientFactory = EventStreamClientFactory.withScope(
+                             getConfig().getDefaultScope(),
+                             getConfig().getClientConfig());
+                     ReaderGroupManager readerGroupManager = ReaderGroupManager.withScope(
+                             getConfig().getDefaultScope(),
+                             getConfig().getClientConfig())) {
+                    // Create stream
+                    streamManager.createStream(
+                            getConfig().getDefaultScope(),
+                            streamName,
+                            StreamConfiguration.builder().build());
+                    // Create writer
+                    try (EventStreamWriter<String> pravegaWriter = clientFactory.createEventWriter(
+                            streamName,
+                            new UTF8StringSerializer(),
+                            EventWriterConfig.builder().build())) {
+                        // Write events to stream
+                        for (int i = 0; i < numEvents; i++) {
+                            log.info("Writing event {}", i);
+                            CompletableFuture<Void> future = pravegaWriter.writeEvent(Integer.toString(i));
+                            future.get();
                         }
                     }
+                    // Create reader group
+                    final String readerGroup = UUID.randomUUID().toString().replace("-", "");
+                    final ReaderGroupConfig readerGroupConfig = ReaderGroupConfig.builder()
+                            .stream(Stream.of(getConfig().getDefaultScope(), streamName))
+                            .build();
+                    readerGroupManager.createReaderGroup(readerGroup, readerGroupConfig);
+                    // Create reader
+                    try (EventStreamReader<String> reader = clientFactory.createReader("reader",
+                            readerGroup,
+                            new UTF8StringSerializer(),
+                            ReaderConfig.builder().build())) {
+                        // Read events from stream
+                        int numEventsRead = 0;
+                        while (numEventsRead < numEvents) {
+                            EventRead<String> event = reader.readNextEvent(1000);
+                            if (event.getEvent() != null) {
+                                log.info("Read event {}", event.getEvent());
+                                numEventsRead++;
+                            }
+                        }
+                    }
+                    // Delete reader group
+                    readerGroupManager.deleteReaderGroup(readerGroup);
+                    // Delete stream
+                    streamManager.sealStream(getConfig().getDefaultScope(), streamName);
+                    streamManager.deleteStream(getConfig().getDefaultScope(), streamName);
                 }
-                // Delete reader group
-                readerGroupManager.deleteReaderGroup(readerGroup);
-                // Delete stream
-                streamManager.sealStream(getConfig().getDefaultScope(), streamName);
-                streamManager.deleteStream(getConfig().getDefaultScope(), streamName);
             }
             log.info("PRAVEGA TESTER COMPLETED SUCCESSFULLY.");
         } catch (Exception e) {

@@ -46,7 +46,7 @@ public class Tester implements Runnable {
 
     public void run() {
         try {
-            final int numEvents = 10;
+            final long numEvents = getConfig().getNumEvents();
             String streamName = "pravega-tester-" + UUID.randomUUID().toString();
             log.info("streamName={}", streamName);
             // Open stream manager, client factory, reader group manager
@@ -72,9 +72,9 @@ public class Tester implements Runnable {
                             new UTF8StringSerializer(),
                             EventWriterConfig.builder().build())) {
                         // Write events to stream
-                        for (int i = 0; i < numEvents; i++) {
+                        for (long i = 0; i < numEvents; i++) {
                             log.info("Writing event {}", i);
-                            CompletableFuture<Void> future = pravegaWriter.writeEvent(Integer.toString(i));
+                            CompletableFuture<Void> future = pravegaWriter.writeEvent(Long.toString(i));
                             future.get();
                         }
                     }
@@ -90,7 +90,7 @@ public class Tester implements Runnable {
                             new UTF8StringSerializer(),
                             ReaderConfig.builder().build())) {
                         // Read events from stream
-                        int numEventsRead = 0;
+                        long numEventsRead = 0;
                         while (numEventsRead < numEvents) {
                             EventRead<String> event = reader.readNextEvent(1000);
                             if (event.getEvent() != null) {
@@ -102,8 +102,10 @@ public class Tester implements Runnable {
                     // Delete reader group
                     readerGroupManager.deleteReaderGroup(readerGroup);
                     // Delete stream
-                    streamManager.sealStream(getConfig().getDefaultScope(), streamName);
-                    streamManager.deleteStream(getConfig().getDefaultScope(), streamName);
+                    if (getConfig().isDeleteStream()) {
+                        streamManager.sealStream(getConfig().getDefaultScope(), streamName);
+                        streamManager.deleteStream(getConfig().getDefaultScope(), streamName);
+                    }
                 }
             }
             log.info("PRAVEGA TESTER COMPLETED SUCCESSFULLY.");

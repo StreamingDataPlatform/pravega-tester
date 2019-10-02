@@ -22,12 +22,16 @@ public class AppConfiguration {
     private final ClientConfig clientConfig;
     private final String defaultScope;
     private final boolean createScope;
+    private final boolean deleteStream;
+    private final long numEvents;
 
     public AppConfiguration(String[] args) {
         URI controllerURI = URI.create(getEnvVar("PRAVEGA_CONTROLLER_URI", "tcp://localhost:9090"));
         clientConfig = ClientConfig.builder().controllerURI(controllerURI).build();
         defaultScope = getEnvVar("PRAVEGA_SCOPE", "examples");
         createScope = Boolean.parseBoolean(getEnvVar("CREATE_SCOPE", "false"));
+        deleteStream = Boolean.parseBoolean(getEnvVar("DELETE_STREAM", "true"));
+        numEvents = Long.parseLong(getEnvVar("NUM_EVENTS", "10"));
     }
 
     @Override
@@ -36,6 +40,8 @@ public class AppConfiguration {
                 "clientConfig=" + clientConfig +
                 ", defaultScope='" + defaultScope + '\'' +
                 ", createScope=" + createScope +
+                ", deleteStream=" + deleteStream +
+                ", numEvents=" + numEvents +
                 '}';
     }
 
@@ -49,6 +55,14 @@ public class AppConfiguration {
 
     public boolean isCreateScope() {
         return createScope;
+    }
+
+    public boolean isDeleteStream() {
+        return deleteStream;
+    }
+
+    public long getNumEvents() {
+        return numEvents;
     }
 
     protected static String getEnvVar(String name, String defaultValue) {

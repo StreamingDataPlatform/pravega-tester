@@ -1,7 +1,8 @@
 # Pravega Tester
 
 Pravega Tester can be used to quickly test Pravega connectivity, authentication, and authorization.
-When executed, it will create a new stream, write events, read events, and delete the stream
+When executed, it will create a new stream, write events, read events, and delete the stream.
+It works with open-source Pravega and Dell EMC Streaming Data Platform (SDP).
 
 ## Usage
 
@@ -11,7 +12,7 @@ There is no need to clone this repo or install any build tools.
 Available Docker images can be found at
 [Docker Hub](https://hub.docker.com/r/claudiofahey/pravega-tester/tags).
 
-### Test Pravega on Nautilus from inside of Nautilus
+### Test Pravega on SDP from inside of SDP
 
 Set environment variables.
 Do not change PRAVEGA_CONTROLLER_URI as this URL will work from within any Kubernetes pod.
@@ -20,7 +21,7 @@ You may need to change PRAVEGA_SCOPE.
 ```
 export PRAVEGA_CONTROLLER_URI=tcp://nautilus-pravega-controller.nautilus-pravega.svc.cluster.local:9090
 export PRAVEGA_SCOPE=examples
-export IMAGE=claudiofahey/pravega-tester:0.11.13
+export IMAGE=claudiofahey/pravega-tester:1.0.0
 ```
 
 Run Pravega Tester in Kubernetes.
@@ -34,7 +35,7 @@ kubectl run -n ${PRAVEGA_SCOPE} --rm -it \
 pravega-tester
 ```
 
-### Test Pravega on Nautilus from outside of Nautilus
+### Test Pravega on SDP from outside of SDP
 
 Set environment variables.
 You **must** change PRAVEGA_CONTROLLER_URI.
@@ -43,7 +44,7 @@ You may need to change PRAVEGA_SCOPE.
 ```
 export PRAVEGA_CONTROLLER_URI=tcp://nautilus-pravega-controller.example.com:9090
 export PRAVEGA_SCOPE=examples
-export IMAGE=claudiofahey/pravega-tester:0.11.13
+export IMAGE=claudiofahey/pravega-tester:1.0.0
 ```
 
 Obtain the Pravega authentication credentials (Keycloak).
@@ -55,14 +56,14 @@ chmod go-rw ${HOME}/keycloak.json
 
 Run Pravega Tester in a Docker container.
 ```
-docker run --rm \
+docker run --rm --network host \
 -v ${HOME}/keycloak.json:/keycloak.json \
 -e PRAVEGA_CONTROLLER_URI \
 -e PRAVEGA_SCOPE \
 ${IMAGE}
 ```
 
-### Test Pravega without Nautilus
+### Test Pravega without SDP
 
 Set environment variables.
 You may need to change PRAVEGA_CONTROLLER_URI and PRAVEGA_SCOPE.
@@ -71,7 +72,7 @@ You may need to change PRAVEGA_CONTROLLER_URI and PRAVEGA_SCOPE.
 export PRAVEGA_CONTROLLER_URI=tcp://localhost:9090
 export PRAVEGA_SCOPE=examples
 export CREATE_SCOPE=true
-export IMAGE=claudiofahey/pravega-tester:0.5.0
+export IMAGE=claudiofahey/pravega-tester:1.0.0
 ```
 
 Run Pravega Tester in a Docker container.
@@ -87,7 +88,7 @@ ${IMAGE}
 
 ### Expected Output
 
-Below shows the expected output with Pravega on Nautilus. Some lines are ommitted for brevity.
+Below shows the expected output with Pravega on SDP. Some lines are ommitted for brevity.
 
 ```
 INFO  [2019-09-20 03:11:04.252] [main] c.d.n.p.c.auth.utils.ConfigFileUtils: Final file resolution attempt: /keycloak.json
@@ -105,8 +106,6 @@ INFO  [2019-09-20 03:11:17.281] [main] io.pravega.example.tester.Tester: PRAVEGA
 ## Build Instructions
 
 This is only needed if you wish to create a custom Docker image.
-
-Obtain the file pravega-keycloak-credentials-*.jar and place it in the lib directory.
 
 You may need to update gradle.properties and pravega-tester/Dockerfile with specific Pravega version numbers.
 

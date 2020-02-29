@@ -41,7 +41,7 @@ dependencies {
     compile "net.logstash.logback:logstash-logback-encoder:${logstashLogbackEncoderVersion}"
     compile "io.pravega:pravega-client:${pravegaVersion}"
     if (includePravegaCredentials.toBoolean()) {
-        compile "io.pravega:pravega-keycloak-credentials:${pravegaCredentialsVersion}"
+        compile "io.pravega:pravega-keycloak-client:${pravegaCredentialsVersion}"
     }
 }
 

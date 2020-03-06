@@ -103,6 +103,20 @@ INFO  [2019-09-20 03:11:13.115] [main] io.pravega.example.tester.Tester: Read ev
 INFO  [2019-09-20 03:11:17.281] [main] io.pravega.example.tester.Tester: PRAVEGA TESTER COMPLETED SUCCESSFULLY.
 ```
 
+### Available Parameters
+
+Parameters can be specified using environment variables.
+Be sure to export them from Bash and pass the variable name using the `-e` docker option.
+
+- PRAVEGA_CONTROLLER_URI: A URI such as `tcp://localhost:9090`.
+- PRAVEGA_SCOPE: The Pravega scope. This is the same as the SDP Project name.
+- CREATE_SCOPE: Set to "true" or "1" to create the scope. 
+  On SDP, this must be unset or set it to "false" or "0".
+- DELETE_STREAM: Set to "false" or "0" to keep the test stream.
+- NUM_EVENTS: The default is "10".
+- PRAVEGA_TESTER_OPTS: Set to "-Droot.log.level=DEBUG" to enable debug logging.
+  You may also specify TRACE.
+
 ## Build Instructions
 
 This is only needed if you wish to create a custom Docker image.

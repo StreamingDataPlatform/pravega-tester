@@ -66,45 +66,51 @@ public class Tester implements Runnable {
                             getConfig().getDefaultScope(),
                             streamName,
                             StreamConfiguration.builder().build());
-                    // Create writer
-                    try (EventStreamWriter<String> pravegaWriter = clientFactory.createEventWriter(
-                            streamName,
-                            new UTF8StringSerializer(),
-                            EventWriterConfig.builder().build())) {
-                        // Write events to stream
-                        for (long i = 0; i < numEvents; i++) {
-                            log.info("Writing event {}", i);
-                            CompletableFuture<Void> future = pravegaWriter.writeEvent(Long.toString(i));
-                            future.get();
-                        }
-                    }
-                    // Create reader group
-                    final String readerGroup = UUID.randomUUID().toString().replace("-", "");
-                    final ReaderGroupConfig readerGroupConfig = ReaderGroupConfig.builder()
-                            .stream(Stream.of(getConfig().getDefaultScope(), streamName))
-                            .build();
-                    readerGroupManager.createReaderGroup(readerGroup, readerGroupConfig);
-                    // Create reader
-                    try (EventStreamReader<String> reader = clientFactory.createReader("reader",
-                            readerGroup,
-                            new UTF8StringSerializer(),
-                            ReaderConfig.builder().build())) {
-                        // Read events from stream
-                        long numEventsRead = 0;
-                        while (numEventsRead < numEvents) {
-                            EventRead<String> event = reader.readNextEvent(1000);
-                            if (event.getEvent() != null) {
-                                log.info("Read event {}", event.getEvent());
-                                numEventsRead++;
+                    try {
+                        // Create writer
+                        try (EventStreamWriter<String> pravegaWriter = clientFactory.createEventWriter(
+                                streamName,
+                                new UTF8StringSerializer(),
+                                EventWriterConfig.builder().build())) {
+                            // Write events to stream
+                            for (long i = 0; i < numEvents; i++) {
+                                log.info("Writing event {}", i);
+                                CompletableFuture<Void> future = pravegaWriter.writeEvent(Long.toString(i));
+                                future.get();
                             }
                         }
-                    }
-                    // Delete reader group
-                    readerGroupManager.deleteReaderGroup(readerGroup);
-                    // Delete stream
-                    if (getConfig().isDeleteStream()) {
-                        streamManager.sealStream(getConfig().getDefaultScope(), streamName);
-                        streamManager.deleteStream(getConfig().getDefaultScope(), streamName);
+                        // Create reader group
+                        final String readerGroup = UUID.randomUUID().toString().replace("-", "");
+                        final ReaderGroupConfig readerGroupConfig = ReaderGroupConfig.builder()
+                                .stream(Stream.of(getConfig().getDefaultScope(), streamName))
+                                .build();
+                        readerGroupManager.createReaderGroup(readerGroup, readerGroupConfig);
+                        try {
+                            // Create reader
+                            try (EventStreamReader<String> reader = clientFactory.createReader("reader",
+                                    readerGroup,
+                                    new UTF8StringSerializer(),
+                                    ReaderConfig.builder().build())) {
+                                // Read events from stream
+                                long numEventsRead = 0;
+                                while (numEventsRead < numEvents) {
+                                    EventRead<String> event = reader.readNextEvent(1000);
+                                    if (event.getEvent() != null) {
+                                        log.info("Read event {}", event.getEvent());
+                                        numEventsRead++;
+                                    }
+                                }
+                            }
+                        } finally {
+                            // Delete reader group
+                            readerGroupManager.deleteReaderGroup(readerGroup);
+                        }
+                    } finally {
+                        // Delete stream
+                        if (getConfig().isDeleteStream()) {
+                            streamManager.sealStream(getConfig().getDefaultScope(), streamName);
+                            streamManager.deleteStream(getConfig().getDefaultScope(), streamName);
+                        }
                     }
                 }
             }

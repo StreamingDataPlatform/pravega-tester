@@ -24,6 +24,7 @@ public class AppConfiguration {
     private final boolean createScope;
     private final boolean deleteStream;
     private final long numEvents;
+    private final long eventSize;
 
     public AppConfiguration(String[] args) {
         URI controllerURI = URI.create(getEnvVar("PRAVEGA_CONTROLLER_URI", "tcp://localhost:9090"));
@@ -32,6 +33,7 @@ public class AppConfiguration {
         createScope = Boolean.parseBoolean(getEnvVar("CREATE_SCOPE", "false"));
         deleteStream = Boolean.parseBoolean(getEnvVar("DELETE_STREAM", "true"));
         numEvents = Long.parseLong(getEnvVar("NUM_EVENTS", "10"));
+        eventSize = Long.parseLong(getEnvVar("EVENT_SIZE", "20"));
     }
 
     @Override
@@ -42,6 +44,7 @@ public class AppConfiguration {
                 ", createScope=" + createScope +
                 ", deleteStream=" + deleteStream +
                 ", numEvents=" + numEvents +
+                ", eventSize=" + eventSize +
                 '}';
     }
 
@@ -63,6 +66,10 @@ public class AppConfiguration {
 
     public long getNumEvents() {
         return numEvents;
+    }
+
+    public long getEventSize() {
+        return eventSize;
     }
 
     protected static String getEnvVar(String name, String defaultValue) {

@@ -21,7 +21,7 @@ You may need to change PRAVEGA_SCOPE.
 ```
 export PRAVEGA_CONTROLLER_URI=tcp://nautilus-pravega-controller.nautilus-pravega.svc.cluster.local:9090
 export PRAVEGA_SCOPE=examples
-export IMAGE=claudiofahey/pravega-tester:1.0.0
+export IMAGE=claudiofahey/pravega-tester:0.7.0
 ```
 
 Run Pravega Tester in Kubernetes.
@@ -44,7 +44,7 @@ You may need to change PRAVEGA_SCOPE.
 ```
 export PRAVEGA_CONTROLLER_URI=tcp://nautilus-pravega-controller.example.com:9090
 export PRAVEGA_SCOPE=examples
-export IMAGE=claudiofahey/pravega-tester:1.0.0
+export IMAGE=claudiofahey/pravega-tester:0.7.0
 ```
 
 Obtain the Pravega authentication credentials (Keycloak).
@@ -72,7 +72,7 @@ You may need to change PRAVEGA_CONTROLLER_URI and PRAVEGA_SCOPE.
 export PRAVEGA_CONTROLLER_URI=tcp://localhost:9090
 export PRAVEGA_SCOPE=examples
 export CREATE_SCOPE=true
-export IMAGE=claudiofahey/pravega-tester:1.0.0
+export IMAGE=claudiofahey/pravega-tester:0.7.0
 ```
 
 Run Pravega Tester in a Docker container.
@@ -88,7 +88,7 @@ ${IMAGE}
 
 ### Expected Output
 
-Below shows the expected output with Pravega on SDP. Some lines are ommitted for brevity.
+Below shows the expected output with Pravega on SDP. Some lines are omitted for brevity.
 
 ```
 INFO  [2019-09-20 03:11:04.252] [main] c.d.n.p.c.auth.utils.ConfigFileUtils: Final file resolution attempt: /keycloak.json
@@ -114,6 +114,7 @@ Be sure to export them from Bash and pass the variable name using the `-e` docke
   On SDP, this must be unset or set it to "false" or "0".
 - DELETE_STREAM: Set to "false" or "0" to keep the test stream.
 - NUM_EVENTS: The default is "10".
+- EVENT_SIZE: The size of each event in bytes. The default is 20 bytes. Values up to 8388608 (8 MiB) are expected to work.
 - PRAVEGA_TESTER_OPTS: Set to "-Droot.log.level=DEBUG" to enable debug logging.
   You may also specify TRACE.
 

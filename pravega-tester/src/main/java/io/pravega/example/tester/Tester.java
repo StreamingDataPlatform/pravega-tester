@@ -10,6 +10,7 @@
  */
 package io.pravega.example.tester;
 
+import com.google.common.base.Strings;
 import io.pravega.client.EventStreamClientFactory;
 import io.pravega.client.admin.ReaderGroupManager;
 import io.pravega.client.admin.StreamManager;
@@ -47,12 +48,12 @@ public class Tester implements Runnable {
     public void run() {
         try {
             final long numEvents = getConfig().getNumEvents();
-            String streamName = "pravega-tester-" + UUID.randomUUID().toString();
+            final String streamName = "pravega-tester-" + UUID.randomUUID().toString();
             log.info("streamName={}", streamName);
             // Open stream manager, client factory, reader group manager
             try (StreamManager streamManager = StreamManager.create(getConfig().getClientConfig())) {
                 if (getConfig().isCreateScope()) {
-                    boolean scopeCreated = streamManager.createScope(getConfig().getDefaultScope());
+                    final boolean scopeCreated = streamManager.createScope(getConfig().getDefaultScope());
                     log.info("scopeCreated={}", scopeCreated);
                 }
                 try (EventStreamClientFactory clientFactory = EventStreamClientFactory.withScope(
@@ -73,9 +74,11 @@ public class Tester implements Runnable {
                                 new UTF8StringSerializer(),
                                 EventWriterConfig.builder().build())) {
                             // Write events to stream
+                            final String padding = Strings.repeat("x", (int) getConfig().getEventSize() - 10);
                             for (long i = 0; i < numEvents; i++) {
                                 log.info("Writing event {}", i);
-                                CompletableFuture<Void> future = pravegaWriter.writeEvent(Long.toString(i));
+                                final String event = String.format("%09d,%s", i, padding);
+                                CompletableFuture<Void> future = pravegaWriter.writeEvent(event);
                                 future.get();
                             }
                         }
@@ -96,7 +99,7 @@ public class Tester implements Runnable {
                                 while (numEventsRead < numEvents) {
                                     EventRead<String> event = reader.readNextEvent(1000);
                                     if (event.getEvent() != null) {
-                                        log.info("Read event {}", event.getEvent());
+                                        log.info("Read event {}", event.getEvent().substring(0, 9));
                                         numEventsRead++;
                                     }
                                 }

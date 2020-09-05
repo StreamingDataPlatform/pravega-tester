@@ -4,8 +4,8 @@ set -ex
 ROOT_DIR=$(dirname $0)/..
 
 export DOCKER_REPOSITORY=${DOCKER_REPOSITORY:-claudiofahey}
-# Below should match the SDP or Pravega version
-export IMAGE_TAG=${IMAGE_TAG:-0.7.0}
+# Below should match the Pravega version
+export IMAGE_TAG=${IMAGE_TAG:-0.8.0}
 
 : ${DOCKER_REPOSITORY?"You must export DOCKER_REPOSITORY"}
 : ${IMAGE_TAG?"You must export IMAGE_TAG"}

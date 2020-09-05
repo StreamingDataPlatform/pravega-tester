@@ -37,4 +37,4 @@ ENV pravega_client_auth_loadDynamic=true
 ENV KEYCLOAK_SERVICE_ACCOUNT_FILE=/keycloak.json
 
 COPY --from=GradleBuilder /home/gradle/src/${APP_NAME}/build/install/${APP_NAME} /opt/${APP_NAME}
-ENTRYPOINT /opt/${APP_NAME}/bin/${APP_NAME}
+ENTRYPOINT /opt/${APP_NAME}/bin/entrypoint.sh

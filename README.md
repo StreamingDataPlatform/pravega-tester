@@ -12,7 +12,7 @@ There is no need to clone this repo or install any build tools.
 Available Docker images can be found at
 [Docker Hub](https://hub.docker.com/r/claudiofahey/pravega-tester/tags).
 
-### Test Pravega on SDP from inside of SDP
+### Test Pravega on SDP from inside of SDP, TLS disabled
 
 Set environment variables.
 Do not change PRAVEGA_CONTROLLER_URI as this URL will work from within any Kubernetes pod.
@@ -31,6 +31,36 @@ kubectl run -n ${PRAVEGA_SCOPE} --rm -it \
 --env="PRAVEGA_CONTROLLER_URI=${PRAVEGA_CONTROLLER_URI}" \
 --env="PRAVEGA_SCOPE=${PRAVEGA_SCOPE}" \
 --env="JAVA_OPTS=-Droot.log.level=DEBUG" \
+--image ${IMAGE} \
+pravega-tester
+```
+
+### Test Pravega on SDP from inside of SDP, TLS enabled
+
+Set environment variables.
+You **must** change PRAVEGA_CONTROLLER_URI.
+You may need to change PRAVEGA_SCOPE.
+
+```
+export PRAVEGA_CONTROLLER_URI=tls://$(kubectl get -n nautilus-pravega ingress/pravega-controller -o jsonpath='{.spec.rules[0].host}'):443
+export IMAGE=claudiofahey/pravega-tester:0.8.0
+export PRAVEGA_SCOPE=examples
+```
+
+If you are using a private certificate authority (CA), run the following command.
+
+```
+export CACERT=$(cat ~/desdp/certs/*.crt)
+```
+
+Run Pravega Tester in Kubernetes.
+```
+kubectl run -n ${PRAVEGA_SCOPE} --rm -it \
+--serviceaccount ${PRAVEGA_SCOPE}-pravega \
+--env="PRAVEGA_CONTROLLER_URI=${PRAVEGA_CONTROLLER_URI}" \
+--env="PRAVEGA_SCOPE=${PRAVEGA_SCOPE}" \
+--env="JAVA_OPTS=-Droot.log.level=DEBUG" \
+--env="CACERT=${CACERT}" \
 --image ${IMAGE} \
 pravega-tester
 ```
